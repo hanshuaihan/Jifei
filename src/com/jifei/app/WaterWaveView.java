@@ -56,7 +56,7 @@ public class WaterWaveView extends View {
 	private float mWaterLevel = 0.5F;// 水高(0~1)
 	private Path mPath;
 
-	private String flowNum = "1024M";
+	private String flowNum = "";
 	private String flowLeft = "流量还剩余";
 
 	/**
