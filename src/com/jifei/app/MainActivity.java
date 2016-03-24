@@ -1,5 +1,7 @@
 package com.jifei.app;
 
+import java.text.DecimalFormat;
+
 import com.jifei.app.WaterWaveView;
 import com.jifei.app.R;
 
@@ -7,12 +9,15 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.CallLog;
+import android.provider.CallLog.Calls;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,8 +53,11 @@ public class MainActivity extends Activity {
 	private static final String UNICOM = "10010";
 	private JifeiOpenHelper dbHelper;
 	private int scount=0;
-	private double smsm;
-	static int traffic=0;
+	
+	   
+	
+	
+	
 	private Handler handler = new Handler(){
 		  @Override
 		  public void handleMessage(Message msg) {
@@ -57,6 +65,7 @@ public class MainActivity extends Activity {
 		   super.handleMessage(msg);
 		   if(msg.what == 1){
 			   messagenumber.setText(scount+"");
+			  
 			   
 		   }
 		   
@@ -89,9 +98,13 @@ public class MainActivity extends Activity {
         receiveFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
         messageReceiver=new MessageReceiver();
         registerReceiver(messageReceiver,receiveFilter);
+        
+        
+        
+        
         //在创建活动时调用数据库搜索第一行并显示
         SQLiteDatabase db=dbHelper.getWritableDatabase();
-        Cursor cursor=db.query("Call", null, null, null, null, null,null);
+        Cursor cursor=db.query("Callmoney", null, null, null, null, null,null);
         if(cursor.moveToFirst()){
         	do{
         		String call_money=cursor.getString(cursor.getColumnIndex("call_money"));
@@ -107,11 +120,27 @@ public class MainActivity extends Activity {
         		
         		messagenumber.setText(sms_sendnumber);
         		scount=cursor1.getInt(cursor1.getColumnIndex("sms_sendnumber"));
-        		smsm=scount*0.1;
- 			   messagexiaohaohuafei.setText(smsm+"元");
+        		float smsm= (float)scount/10;   
+        		DecimalFormat df = new DecimalFormat("0.0");//格式化小数   
+        		String smsmm = df.format(smsm);//返回的是String类型 
+  			   messagexiaohaohuafei.setText(smsmm+"元");
         	}while(cursor1.moveToNext());
         	cursor1.close();
         }
+        SQLiteDatabase db2=dbHelper.getWritableDatabase();
+        Cursor cursor2=db2.query("Call", null, null, null, null, null,null);
+        if(cursor2.moveToFirst()){
+        	do{
+        		String call_in_time=cursor2.getString(cursor2.getColumnIndex("call_in_time"));
+        		hurushichang.setText(call_in_time);
+        		String call_out_time=cursor2.getString(cursor2.getColumnIndex("call_out_time"));
+        		huchushichang.setText(call_out_time);
+        	}while(cursor2.moveToNext());
+        	cursor2.close();
+        }
+        
+        
+        
         //所有控件注册
 		huafeichaxun.setOnClickListener(new OnClickListener(){
         	@Override
@@ -120,7 +149,94 @@ public class MainActivity extends Activity {
         		Intent sentIntent=new Intent("SENT_SMS_ACTION");
         		PendingIntent pi=PendingIntent.getBroadcast(MainActivity.this, 0, sentIntent, 0);
         		smsManager.sendTextMessage(UNICOM,null,"102",null,null);
-        		dbHelper.getWritableDatabase();
+        		
+        		
+        		
+        		Cursor cursor = getContentResolver().query(Calls.CONTENT_URI, 
+        				new String[] { Calls.DURATION, Calls.TYPE, Calls.DATE }, null, null, 
+        				Calls.DEFAULT_SORT_ORDER); 
+        				MainActivity.this.startManagingCursor(cursor); 
+        				boolean hasRecord = cursor.moveToFirst(); 
+        				long incoming = 0L; 
+        				long outgoing = 0L; 
+        				while (hasRecord) { 
+        				int type = cursor.getInt(cursor.getColumnIndex(Calls.TYPE)); 
+        				long duration = cursor.getLong(cursor.getColumnIndex(Calls.DURATION)); 
+        				switch (type) { 
+        				case Calls.INCOMING_TYPE: 
+        				incoming += duration; 
+        				break; 
+        				case Calls.OUTGOING_TYPE: 
+        				outgoing += duration; 
+        				default: 
+        				break; 
+        				} 
+        				hasRecord = cursor.moveToNext(); 
+        				} 
+        		
+        			
+        	        long h = 0;  
+        	        long d = 0;  
+        	        long s = 0;  
+        	        long temp = incoming % 3600;  
+        	        if (incoming > 3600) {  
+        	            h = incoming / 3600;  
+        	            if (temp != 0) {  
+        	                if (temp > 60) {  
+        	                    d = temp / 60;  
+        	                    if (temp % 60 != 0) {  
+        	                        s = temp % 60;  
+        	                    }  
+        	                } else {  
+        	                    s = temp;  
+        	                }  
+        	            }  
+        	        } else {  
+        	            d = incoming / 60;  
+        	            if (incoming % 60 != 0) {  
+        	                s = incoming % 60;  
+        	            }  
+        	        }  
+        	        String hi=Long.toString(h);
+        	        String di=Long.toString(d);
+        	        String si=Long.toString(s);
+        	        hurushichang.setText(hi+"时"+di+"分"+si+"秒");
+        		
+        	        
+        	        long h1 = 0;  
+        	        long d1 = 0;  
+        	        long s1= 0;  
+        	        long temp1 = outgoing % 3600;  
+        	        if (outgoing > 3600) {  
+        	            h1 = outgoing / 3600;  
+        	            if (temp1 != 0) {  
+        	                if (temp1 > 60) {  
+        	                    d1 = temp1 / 60;  
+        	                    if (temp1 % 60 != 0) {  
+        	                        s1 = temp1 % 60;  
+        	                    }  
+        	                } else {  
+        	                    s1 = temp1;  
+        	                }  
+        	            }  
+        	        } else {  
+        	            d1 = outgoing / 60;  
+        	            if (outgoing % 60 != 0) {  
+        	                s1 = outgoing % 60;  
+        	            }  
+        	        }  
+        	        String h1i=Long.toString(h1);
+        	        String d1i=Long.toString(d1);
+        	        String s1i=Long.toString(s1);
+        	        huchushichang.setText(h1i+"时"+d1i+"分"+s1i+"秒");
+        	        SQLiteDatabase db2=dbHelper.getWritableDatabase();
+        			ContentValues values = new ContentValues();
+        			values.put("call_in_time", hi+"时"+di+"分"+si+"秒");
+        			values.put("call_out_time", h1i+"时"+d1i+"分"+s1i+"秒");
+        			db2.insert("Call", null, values);
+
+        		
+        		
         		Toast.makeText(getApplication(), "请稍等。。。", Toast.LENGTH_LONG).show();
         	}
     });
@@ -135,6 +251,10 @@ public class MainActivity extends Activity {
     	}
 });
 }
+	
+	
+	
+	
 	//广播器拦截短信截取字符并显示
 	class MessageReceiver extends BroadcastReceiver{
 		
@@ -158,7 +278,7 @@ public class MainActivity extends Activity {
 			SQLiteDatabase db=dbHelper.getWritableDatabase();
 			ContentValues values = new ContentValues();
 			values.put("call_money", ss);
-			db.insert("Call", null, values);
+			db.insert("Callmoney", null, values);
 		
 	}	
 }
@@ -184,6 +304,11 @@ public class MainActivity extends Activity {
             		    scount ++;
             		    msg.what = 1;
             		    handler.sendMessage(msg);
+            		    float smsm= (float)scount/10;   
+                		DecimalFormat df = new DecimalFormat("0.0");//格式化小数   
+                		String smsmm = df.format(smsm);//返回的是String类型 
+          			   messagexiaohaohuafei.setText(smsmm+"元");
+          			   
             		    SQLiteDatabase db1=dbHelper.getWritableDatabase();
             			ContentValues values = new ContentValues();
             			values.put("sms_sendnumber", scount);

@@ -13,13 +13,15 @@ public class JifeiOpenHelper extends SQLiteOpenHelper{
 	public static final String CREATE_TRAFFIC="create table Traffic("
 			+"id integer primary key autoincrement,"
 			+"traffic_number text)";
+	public static final String CREATE_CALLMONEY="create table Callmoney("
+			+"id integer primary key autoincrement,"
+			+"call_money text)";
 	//call表创建
 	public static final String CREATE_CALL="create table Call("
 			+"id integer primary key autoincrement,"
 			+"call_in_time text,"
-			+"call_out_time text,"
-			+"call_money_spend text,"
-			+"call_money text)";
+			+"call_out_time text)";
+			
 	//SMS表创建
 	public static final String CREATE_SMS="create table Sms("
 			+"id integer primary key autoincrement,"
@@ -30,7 +32,9 @@ public class JifeiOpenHelper extends SQLiteOpenHelper{
 	}
 	@Override
 	public void onCreate(SQLiteDatabase db){
+		
 		db.execSQL(CREATE_TRAFFIC);
+		db.execSQL(CREATE_CALLMONEY);
 		db.execSQL(CREATE_CALL);
 		db.execSQL(CREATE_SMS);
 
