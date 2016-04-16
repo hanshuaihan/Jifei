@@ -5,42 +5,62 @@
     android:orientation="vertical"
     android:background="#666666"
 	>
-
-    <com.jifei.app.WaterWaveView
+	<RelativeLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+  <com.jifei.app.WaterWaveView
         android:id="@+id/wave_view"
         android:layout_width="fill_parent"
-        android:layout_height="250dp"
+        android:layout_height="280dp"
         android:layout_gravity="center"
-        android:layout_centerInParent="true" />"
-  
-    
-    <Button 
-        android:id="@+id/xiaozhengliuliang"
+        android:layout_centerInParent="true" />
+  <TextView
+        android:id="@+id/trafficnum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textColor="@android:color/white"
-        android:text="流量校正"/>
-   
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20dp" />
+        android:layout_centerInParent="true"
+        android:textColor="@android:color/white" />
+  </RelativeLayout>
     <LinearLayout 
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
 	>
+ <Space
+        android:layout_width="60dp"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/sendtrafficmsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="流量校正"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/shezhiliuliang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="流量设置"
+        android:textColor="@android:color/white" />
+
+   </LinearLayout>
+
+   
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+   
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="center"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:text="通话详情" />
-    </LinearLayout>
     <LinearLayout 
     android:layout_width="match_parent"
-    android:layout_height="20dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
 	>
     <TextView
@@ -53,7 +73,7 @@
     <TextView
         android:id="@+id/hurushichang"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:textColor="@android:color/white"
         android:layout_weight="1" />
@@ -81,37 +101,18 @@
     </LinearLayout>
     <LinearLayout 
     android:layout_width="match_parent"
-    android:layout_height="20dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
 	>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:textColor="@android:color/white"
-        android:text="消耗话费：" />
+    
 
-    <TextView
-        android:id="@+id/xiaohaohuafei1"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:textColor="@android:color/white"
-        android:layout_weight="1" />
-<View
-            android:layout_width="1dp"
-            android:layout_height="50dp"
-            android:layout_centerInParent="true"
-            android:background="@android:color/white" />
-<Space
-        android:layout_width="10dp"
-        android:layout_height="50dp" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:textColor="@android:color/white"
-        android:text="剩余话费：" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="剩余话费："
+    android:textColor="@android:color/white" />
+
     <TextView 
         android:id="@+id/shengyuhuafei"
         android:layout_width="wrap_content"
@@ -122,28 +123,25 @@
     </LinearLayout>
     <Button 
         android:id="@+id/huafeichaxun"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:textColor="@android:color/white"
-        android:text="话费查询"/>
+        android:text="通话详情查询"/>
         "
     <Space
         android:layout_width="match_parent"
         android:layout_height="20dp" />
-    <LinearLayout 
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-	>
+    
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="center"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:text="短信详情" />
-    </LinearLayout>
+    
     <LinearLayout 
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -159,7 +157,7 @@
     <TextView
         android:id="@+id/messagenumber"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:textColor="@android:color/white"
         android:layout_weight="1" />

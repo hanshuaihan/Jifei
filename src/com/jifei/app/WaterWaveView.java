@@ -5,21 +5,34 @@ package com.jifei.app;
  */
 
 
+import java.text.DecimalFormat;
+
 import com.jifei.app.R;
 
+import com.jifei.app.MainActivity.MessageReceiver;
+import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.net.TrafficStats;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.telephony.SmsMessage;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.Window;
 import android.widget.ProgressBar;
-
+import android.widget.TextView;
 /**
  * @author kince
  * @category View必须是正方形
@@ -27,8 +40,8 @@ import android.widget.ProgressBar;
  */
 public class WaterWaveView extends View {
 
+	
 	private Context mContext;
-
 	private int mScreenWidth;
 	private int mScreenHeight;
 
@@ -55,9 +68,24 @@ public class WaterWaveView extends View {
 	private float mAmplitude = 10.0F; // 振幅
 	private float mWaterLevel = 0.5F;// 水高(0~1)
 	private Path mPath;
-
-	private String flowNum = "";
+	
+	private JifeiOpenHelper dbHelper;
+	
+	private static long mobileTraffic=TrafficStats.getMobileRxBytes()+TrafficStats.getMobileTxBytes(); 
+	double m=(double)mobileTraffic/1024/1024;
+	DecimalFormat df = new DecimalFormat("#0.00");
+	
+	private String flowNum ="";
 	private String flowLeft = "流量还剩余";
+	
+   
+	    
+		
+	
+	
+
+	
+	
 
 	/**
 	 * @param context
@@ -68,6 +96,8 @@ public class WaterWaveView extends View {
 		mContext = context;
 		init(mContext);
 	}
+
+	
 
 	/**
 	 * @param context
@@ -97,6 +127,10 @@ public class WaterWaveView extends View {
     }
 
     private void init(Context context) {
+    	
+    	
+    	
+    	
 		mRingPaint = new Paint();
 		mRingPaint.setColor(mRingColor);
 		mRingPaint.setAlpha(50);
@@ -126,7 +160,7 @@ public class WaterWaveView extends View {
 		leftPaint.setColor(mCircleColor);
 		leftPaint.setStyle(Paint.Style.FILL);
 		leftPaint.setAntiAlias(true);
-		leftPaint.setTextSize(18);
+		leftPaint.setTextSize(40);
 
 		mWavePaint = new Paint();
 		mWavePaint.setStrokeWidth(1.0F);
@@ -192,6 +226,8 @@ public class WaterWaveView extends View {
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		// TODO Auto-generated method stub
+		
+		
 		super.onSizeChanged(w, h, oldw, oldh);
 		mScreenWidth = w;
 		mScreenHeight = h;
@@ -199,6 +235,11 @@ public class WaterWaveView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		
+		
+		
+		
+		
 		// TODO Auto-generated method stub
 		super.onDraw(canvas);
 		// 得到控件的宽高
@@ -279,6 +320,10 @@ public class WaterWaveView extends View {
         canvas.drawCircle(mScreenWidth / 2, mScreenHeight / 2, mScreenWidth / 4, mCirclePaint);
         canvas.restore();
 	}
+
+	
+
+
 
 	@Override
 	public Parcelable onSaveInstanceState() {

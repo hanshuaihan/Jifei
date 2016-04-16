@@ -12,7 +12,8 @@ public class JifeiOpenHelper extends SQLiteOpenHelper{
 	//traffic±í´´½¨
 	public static final String CREATE_TRAFFIC="create table Traffic("
 			+"id integer primary key autoincrement,"
-			+"traffic_number text)";
+			+"used_tfcnum text,"
+			+"traffic_number integer)";
 	public static final String CREATE_CALLMONEY="create table Callmoney("
 			+"id integer primary key autoincrement,"
 			+"call_money text)";
@@ -27,6 +28,7 @@ public class JifeiOpenHelper extends SQLiteOpenHelper{
 			+"id integer primary key autoincrement,"
 			+"sms_sendnumber text"
 			+"sms_money text)";
+	
 	public JifeiOpenHelper(Context context,String name,CursorFactory factory,int version){
 		super(context,name,factory,version);
 	}

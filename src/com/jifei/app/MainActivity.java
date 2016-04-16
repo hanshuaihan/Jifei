@@ -1,17 +1,20 @@
 package com.jifei.app;
-
+import com.jifei.app.WaterWaveView;
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 
-import com.jifei.app.WaterWaveView;
 import com.jifei.app.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.TrafficStats;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,29 +41,28 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class MainActivity extends Activity {
 	//定义用到的控件
-	private TextView liuliangshengyu;
-	private Button xiaozhengliuliang;
+	private TextView trafficnum;
+	private Button shezhiliuliang;
 	private TextView hurushichang;
 	private TextView huchushichang;
-	private TextView xiaohaohuafei1;
 	private TextView shengyuhuafei;
 	private Button huafeichaxun;
 	private TextView messagenumber;
 	private TextView messagexiaohaohuafei;
-	private WaterWaveView mWaterWaveView;
 	private MessageReceiver messageReceiver;
 	private IntentFilter receiveFilter;
 	private static final String UNICOM = "10010";
 	private JifeiOpenHelper dbHelper;
 	private int scount=0;
-	
-	   
-	
+	private Button sendtrafficmsg;
+	private WaterWaveView mWaterWaveView;
+	private static final int msgKey1 = 2;
+	private static long firsttfc=TrafficStats.getMobileRxBytes()+TrafficStats.getMobileTxBytes();
 	
 	
 	private Handler handler = new Handler(){
 		  @Override
-		  public void handleMessage(Message msg) {
+		  public void handleMessage(Message msg){
 		   // TODO Auto-generated method stub
 		   super.handleMessage(msg);
 		   if(msg.what == 1){
@@ -73,6 +75,86 @@ public class MainActivity extends Activity {
 		   
 		 };
 	
+		 
+		 
+		 
+		 
+		   
+		    public class TimeThread extends Thread {
+		         @Override
+		         public void run () {
+		             do {
+		                 try {
+		                     Thread.sleep(1000);
+	                    Message msg = new Message();
+		                   msg.what = msgKey1;
+	                   mHandler.sendMessage(msg);
+		                 }
+	                catch (InterruptedException e) {
+		                    e.printStackTrace();
+		                }
+		            } while(true);
+     }
+	    }
+	     
+	    private Handler mHandler = new Handler() {
+	        @Override
+		       public void handleMessage (Message msg) {
+		           super.handleMessage(msg);
+	        switch (msg.what) {
+		               case msgKey1:
+		            	   long nowtraffic=TrafficStats.getMobileRxBytes()+TrafficStats.getMobileTxBytes()-firsttfc;
+		            	   if(nowtraffic>=1024){
+		            		   SQLiteDatabase db3=dbHelper.getWritableDatabase();
+		            	        Cursor cursor3=db3.query("Traffic", null, null, null, null, null,null);
+		            	        if(cursor3.moveToFirst()){
+		            	        	do{
+		            	        		int traffic_number=cursor3.getInt(cursor3.getColumnIndex("traffic_number"));
+		            	        		                  		
+		            	        		trafficnum.setText(Integer.toString(traffic_number-1)+"MB");
+		            	        		
+		            	        		ContentValues values = new ContentValues();
+		            					values.put("traffic_number", traffic_number-1);
+		            					db3.update("Traffic",values,null, null);
+		            	        		if(traffic_number<=224){
+		            	        			new AlertDialog.Builder(MainActivity.this).setTitle("系统提示")//设置对话框标题  
+		            	      			  
+		            	   			     .setMessage("流量已用尽")//设置显示的内容  
+		            	   			  
+		            	   			     .setPositiveButton("确定",new DialogInterface.OnClickListener() {//添加确定按钮  
+		            	   			  
+		            	   			          
+		            	   			  
+		            	   			         @Override  
+		            	   			  
+		            	   			         public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件  
+		            	   			  
+		            	   			             // TODO Auto-generated method stub  
+		            	   			  
+		            	   			  
+		            	   			         }  
+		            	   			  
+		            	   			     }).show();//在按键响应事件中显示此对话框  
+		            	        		}
+		            	        		
+		            	        	}while(cursor3.moveToNext());
+		            	        	cursor3.close();
+		            	        	
+		            	        }
+
+		            	   }
+		            	   firsttfc=TrafficStats.getMobileRxBytes()+TrafficStats.getMobileTxBytes();
+		                     break;
+		                
+		                default:
+		                    break;
+		             }
+	        }
+	     };
+		
+		 
+		 
+		 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,24 +163,46 @@ public class MainActivity extends Activity {
 		dbHelper=new JifeiOpenHelper(this,"Jifei.db",null,1);//创建JifeiOpenHelper对象，命名为Jifei。db
 		getContentResolver().registerContentObserver(Uri.parse 
                 ("content://sms"), true, new SmsObserver(new Handler()));
-
-		xiaozhengliuliang=(Button)findViewById(R.id.xiaozhengliuliang);
+		
+		
+		
+		
+		
+		trafficnum=(TextView)findViewById(R.id.trafficnum);
+		shezhiliuliang=(Button)findViewById(R.id.shezhiliuliang);
+		sendtrafficmsg=(Button)findViewById(R.id.sendtrafficmsg);
 		huafeichaxun=(Button)findViewById(R.id.huafeichaxun);
 		hurushichang=(TextView)findViewById(R.id.hurushichang);
 		huchushichang=(TextView)findViewById(R.id.huchushichang);
-		xiaohaohuafei1=(TextView)findViewById(R.id.xiaohaohuafei1);
 		shengyuhuafei=(TextView)findViewById(R.id.shengyuhuafei);
 		messagenumber=(TextView)findViewById(R.id.messagenumber);
 		messagexiaohaohuafei=(TextView)findViewById(R.id.messagexiaohaohuafei);
-		mWaterWaveView = (WaterWaveView) findViewById(R.id.wave_view);
-        mWaterWaveView.setmWaterLevel(0.8F);
-		mWaterWaveView.startWave();
+		
+		
+		
+		
+		new TimeThread().start();
+		   
+		 
+		
+		
+		
+		
+		
 		//所有用到的UI控件的创建
 		receiveFilter=new IntentFilter();
         receiveFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
         messageReceiver=new MessageReceiver();
         registerReceiver(messageReceiver,receiveFilter);
         
+
+mWaterWaveView = (WaterWaveView) findViewById(R.id.wave_view);
+        mWaterWaveView.setmWaterLevel(0.8F);
+		mWaterWaveView.startWave();
+        
+		
+		
+		
         
         
         
@@ -138,7 +242,19 @@ public class MainActivity extends Activity {
         	}while(cursor2.moveToNext());
         	cursor2.close();
         }
-        
+        SQLiteDatabase db3=dbHelper.getWritableDatabase();
+        Cursor cursor3=db3.query("Traffic", null, null, null, null, null,null);
+        if(cursor3.moveToFirst()){
+        	do{
+        		int traffic_number=cursor3.getInt(cursor3.getColumnIndex("traffic_number"));
+        		
+        		
+        		trafficnum.setText(Integer.toString(traffic_number)+"MB");
+        		
+        	}while(cursor3.moveToNext());
+        	cursor3.close();
+        }
+
         
         
         //所有控件注册
@@ -241,25 +357,38 @@ public class MainActivity extends Activity {
         	}
     });
 	
-	xiaozhengliuliang.setOnClickListener(new OnClickListener(){
+	shezhiliuliang.setOnClickListener(new OnClickListener(){
+    	@Override
+    	public void onClick(View v){
+    		Intent intent=new Intent(MainActivity.this,trafficset.class);
+    		startActivity(intent);
+    	}
+});
+	sendtrafficmsg.setOnClickListener(new OnClickListener(){
     	@Override
     	public void onClick(View v){
     		SmsManager smsManager=SmsManager.getDefault();
     		Intent sentIntent=new Intent("SENT_SMS_ACTION");
     		PendingIntent pi=PendingIntent.getBroadcast(MainActivity.this, 0, sentIntent, 0);
     		smsManager.sendTextMessage(UNICOM,null,"412",null,null);
+    		Toast.makeText(getApplication(), "请稍等。。。", Toast.LENGTH_LONG).show();
     	}
 });
 }
 	
-	
-	
+
+        	
 	
 	//广播器拦截短信截取字符并显示
 	class MessageReceiver extends BroadcastReceiver{
 		
+		
+		
+		
 		@Override
 		public void onReceive(Context context,Intent intent){
+			
+			
 			Bundle bundle=intent.getExtras();
 			Object[]pdus=(Object[])bundle.get("pdus");
 			SmsMessage[]messages=new SmsMessage[pdus.length];
@@ -270,18 +399,73 @@ public class MainActivity extends Activity {
 			for (SmsMessage message : messages){
 				ss +=message.getMessageBody();
 			}
-			String str1=ss.substring(0,ss.indexOf("元"));
-			String str2=ss.substring(0,ss.indexOf("余额为"));
-			ss=str1.replace(str2,"");
+				if(ss.indexOf("余额")>=0){
+					String str1=ss.substring(0,ss.indexOf("元"));
+					String str2=ss.substring(0,ss.indexOf("余额为"));
+					ss=str1.replace(str2,"");
+				
+					shengyuhuafei.setText(ss+"元");
+					SQLiteDatabase db=dbHelper.getWritableDatabase();
+					ContentValues values = new ContentValues();
+					values.put("call_money", ss);
+					db.insert("Callmoney", null, values);
+				}
+				else{
+					String a=ss.substring(ss.indexOf("剩余"));
+					String b=a.substring(0,a.indexOf("."));
+					String c=a.substring(a.indexOf("MB"));
+					String d=c.substring(c.indexOf("剩余"));
+					String e=d.substring(0,d.indexOf("."));
+					char[] bb = b.toCharArray();
+					String last = "" ;
+					for (int i = 0; i < bb.length; i++)
+					{
+					if (("0123456789-").indexOf(bb[i] + "") != -1)
+					{
+					last += bb[i];
+					}
+					}
+					
+					
+					char[] b1 = e.toCharArray();
+					
+					String thismt = "";
+					for (int i1 = 0; i1 < b1.length; i1++)
+					{
+					if (("0123456789-").indexOf(b1[i1] + "") != -1)
+					{
+					thismt += b1[i1];
+					}
+					}
+					int i = Integer.valueOf(thismt).intValue();
+					int i1 = Integer.valueOf(last).intValue();
+					int allused=i+i1;
+					
+					
+					
+					
+					
+					trafficnum.setText(Integer.toString(allused)+"MB");
+					
+					SQLiteDatabase db3=dbHelper.getWritableDatabase();
+					ContentValues values = new ContentValues();
+					values.put("traffic_number", allused);
+					db3.insert("Traffic", null, values);
+					
+					
+					
+
+					
+				
 			
-			shengyuhuafei.setText(ss+"元");
-			SQLiteDatabase db=dbHelper.getWritableDatabase();
-			ContentValues values = new ContentValues();
-			values.put("call_money", ss);
-			db.insert("Callmoney", null, values);
+			
+				
+				}
+			
 		
-	}	
+				
 }
+	}
 	class SmsObserver extends ContentObserver{ 
 		   
         public SmsObserver(Handler handler) { 
@@ -321,6 +505,7 @@ public class MainActivity extends Activity {
         } 
            
     } 
+
 
 
 
