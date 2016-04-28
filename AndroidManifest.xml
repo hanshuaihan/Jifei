@@ -31,9 +31,11 @@
             </intent-filter>
         </activity>
         <activity android:name="com.jifei.app.trafficset">
+             </activity>
+        <activity android:name="com.jifei.app.ContactRecordListActivity">
             
         </activity>
-        "
+        
     </application>
 
 </manifest>

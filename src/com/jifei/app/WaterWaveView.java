@@ -76,7 +76,7 @@ public class WaterWaveView extends View {
 	DecimalFormat df = new DecimalFormat("#0.00");
 	
 	private String flowNum ="";
-	private String flowLeft = "Á÷Á¿»¹Ê£Óà";
+	private String flowLeft = "";
 	
    
 	    

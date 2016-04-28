@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
 	private WaterWaveView mWaterWaveView;
 	private static final int msgKey1 = 2;
 	private static long firsttfc=TrafficStats.getMobileRxBytes()+TrafficStats.getMobileTxBytes();
-	
+	private Button tonghuajilu;
 	
 	private Handler handler = new Handler(){
 		  @Override
@@ -96,7 +96,9 @@ public class MainActivity extends Activity {
 		            } while(true);
      }
 	    }
-	     
+		    
+		    
+		    
 	    private Handler mHandler = new Handler() {
 	        @Override
 		       public void handleMessage (Message msg) {
@@ -109,32 +111,16 @@ public class MainActivity extends Activity {
 		            	        Cursor cursor3=db3.query("Traffic", null, null, null, null, null,null);
 		            	        if(cursor3.moveToFirst()){
 		            	        	do{
+		            	                
 		            	        		int traffic_number=cursor3.getInt(cursor3.getColumnIndex("traffic_number"));
 		            	        		                  		
-		            	        		trafficnum.setText(Integer.toString(traffic_number-1)+"MB");
+		            	        		trafficnum.setText("流量还剩余"+"\n"+"\n"+Integer.toString(traffic_number-1)+"MB");
 		            	        		
 		            	        		ContentValues values = new ContentValues();
 		            					values.put("traffic_number", traffic_number-1);
 		            					db3.update("Traffic",values,null, null);
-		            	        		if(traffic_number<=224){
-		            	        			new AlertDialog.Builder(MainActivity.this).setTitle("系统提示")//设置对话框标题  
-		            	      			  
-		            	   			     .setMessage("流量已用尽")//设置显示的内容  
-		            	   			  
-		            	   			     .setPositiveButton("确定",new DialogInterface.OnClickListener() {//添加确定按钮  
-		            	   			  
-		            	   			          
-		            	   			  
-		            	   			         @Override  
-		            	   			  
-		            	   			         public void onClick(DialogInterface dialog, int which) {//确定按钮的响应事件  
-		            	   			  
-		            	   			             // TODO Auto-generated method stub  
-		            	   			  
-		            	   			  
-		            	   			         }  
-		            	   			  
-		            	   			     }).show();//在按键响应事件中显示此对话框  
+		            					if(traffic_number<=175){
+		            						trafficnum.setText("流量已经耗尽！");
 		            	        		}
 		            	        		
 		            	        	}while(cursor3.moveToNext());
@@ -167,7 +153,6 @@ public class MainActivity extends Activity {
 		
 		
 		
-		
 		trafficnum=(TextView)findViewById(R.id.trafficnum);
 		shezhiliuliang=(Button)findViewById(R.id.shezhiliuliang);
 		sendtrafficmsg=(Button)findViewById(R.id.sendtrafficmsg);
@@ -177,7 +162,7 @@ public class MainActivity extends Activity {
 		shengyuhuafei=(TextView)findViewById(R.id.shengyuhuafei);
 		messagenumber=(TextView)findViewById(R.id.messagenumber);
 		messagexiaohaohuafei=(TextView)findViewById(R.id.messagexiaohaohuafei);
-		
+		tonghuajilu=(Button)findViewById(R.id.tonghuajilu);
 		
 		
 		
@@ -249,14 +234,20 @@ mWaterWaveView = (WaterWaveView) findViewById(R.id.wave_view);
         		int traffic_number=cursor3.getInt(cursor3.getColumnIndex("traffic_number"));
         		
         		
-        		trafficnum.setText(Integer.toString(traffic_number)+"MB");
+        		trafficnum.setText("流量还剩余"+"\n"+"\n"+Integer.toString(traffic_number)+"MB");
         		
         	}while(cursor3.moveToNext());
         	cursor3.close();
         }
 
         
-        
+        tonghuajilu.setOnClickListener(new OnClickListener(){
+        	@Override
+        	public void onClick(View v){
+        	Intent intent=new Intent(MainActivity.this,ContactRecordListActivity.class);
+    		startActivity(intent);
+        	}
+        });
         //所有控件注册
 		huafeichaxun.setOnClickListener(new OnClickListener(){
         	@Override
@@ -378,7 +369,11 @@ mWaterWaveView = (WaterWaveView) findViewById(R.id.wave_view);
 	
 
         	
-	
+
+
+
+
+
 	//广播器拦截短信截取字符并显示
 	class MessageReceiver extends BroadcastReceiver{
 		
@@ -445,7 +440,7 @@ mWaterWaveView = (WaterWaveView) findViewById(R.id.wave_view);
 					
 					
 					
-					trafficnum.setText(Integer.toString(allused)+"MB");
+					trafficnum.setText("流量还剩余"+"\n"+"\n"+Integer.toString(allused)+"MB");
 					
 					SQLiteDatabase db3=dbHelper.getWritableDatabase();
 					ContentValues values = new ContentValues();
